@@ -26,6 +26,16 @@ app.all("/", async (req, res) => {
   }
 });
 
+app.get("/clear", (req, res) => {
+  if (fs.existsSync("log.txt")) {
+    fs.unlinkSync("log.txt"); // hapus file
+    res.send("✅ Log telah dihapus.");
+  } else {
+    res.send("📭 Tidak ada log untuk dihapus.");
+  }
+});
+
+
 // Log viewer
 app.get("/log", (req, res) => {
   if (fs.existsSync("log.txt")) {
