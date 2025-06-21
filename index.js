@@ -3,16 +3,19 @@ import fetch from "node-fetch";
 import fs from "fs";
 
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
-app.get("/", async (req, res) => {
-  const url = req.query.url;
+app.all("/", async (req, res) => {
+  const url = req.query.url || req.body.url;
+
   if (!url) return res.status(400).send("Missing URL");
 
   try {
     const response = await fetch(url, { timeout: 5000 });
     const text = await response.text();
 
-    // Simpan log ke file
+    // Simpan log
     const log = `\n==== SSRF to ${url} ====\n${text}\n`;
     fs.appendFileSync("log.txt", log);
 
@@ -23,7 +26,7 @@ app.get("/", async (req, res) => {
   }
 });
 
-// Endpoint untuk cek log
+// Log viewer
 app.get("/log", (req, res) => {
   if (fs.existsSync("log.txt")) {
     const logs = fs.readFileSync("log.txt", "utf-8");
